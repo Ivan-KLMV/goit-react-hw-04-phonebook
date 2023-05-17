@@ -1,63 +1,46 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { ContactForm, ContactList, Filter } from '../index';
 import { AppContainer } from './App.styled';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
+export const App = () => {
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(localStorage.getItem('contacts')) ?? []
+  );
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = contact => {
+    setContacts(contacts => [contact, ...contacts]);
   };
 
-  componentDidMount() {
-    if (localStorage.getItem('contacts')) {
-      this.setState({ contacts: JSON.parse(localStorage.getItem('contacts')) });
-    }
-  }
-
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
-  addContact = contact => {
-    this.setState(prevState => ({
-      contacts: [contact, ...prevState.contacts],
-    }));
+  const filterHandler = e => {
+    setFilter(e.currentTarget.value);
   };
 
-  filterHandler = e => {
-    this.setState({ filter: e.currentTarget.value });
-  };
+  const handleFilterContact = () => {
+    const filterToLowerCase = filter.toLowerCase();
 
-  handleFilterContact = () => {
-    const filterToLowerCase = this.state.filter.toLowerCase();
-
-    return this.state.contacts.filter(contact =>
+    return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filterToLowerCase)
     );
   };
 
-  deleteConact = id => {
-    this.setState({
-      contacts: [...this.state.contacts.filter(contact => contact.id !== id)],
-    });
+  const deleteConact = id => {
+    setContacts([...contacts.filter(contact => contact.id !== id)]);
   };
 
-  render() {
-    const visibleContacts = this.handleFilterContact();
+  const visibleContacts = handleFilterContact();
 
-    return (
-      <AppContainer>
-        <h1>phonebook</h1>
-        <ContactForm
-          onSubmitProp={this.addContact}
-          contactsProp={this.state.contacts}
-        />
-        <h2>contacts</h2>
-        <Filter filterValue={this.state.filter} onChange={this.filterHandler} />
-        <ContactList contacts={visibleContacts} onClick={this.deleteConact} />
-      </AppContainer>
-    );
-  }
-}
+  return (
+    <AppContainer>
+      <h1>phonebook</h1>
+      <ContactForm onSubmitProp={addContact} contactsProp={contacts} />
+      <h2>contacts</h2>
+      <Filter filterValue={filter} onChange={filterHandler} />
+      <ContactList contacts={visibleContacts} onClick={deleteConact} />
+    </AppContainer>
+  );
+};

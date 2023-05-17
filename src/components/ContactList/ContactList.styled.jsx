@@ -11,11 +11,24 @@ export const ContactListStyled = styled.ul`
   letter-spacing: 0.04em;
 
   & > li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    &::before {
+      content: '';
+      display: block;
+      align-self: center;
+      width: 6px;
+      height: 6px;
+      background: black;
+      border-radius: 50%;
+    }
   }
 
   & > li > button {
     width: fit-content;
-    padding: 3px 4px;
+    padding: 2px 6px;
     padding-bottom: 0;
 
     background-color: white;
@@ -39,7 +52,7 @@ export const ContactListStyled = styled.ul`
   }
 
   & > li > span {
-    margin-left: 5px;
-    margin-right: 15px;
+    /* margin-left: 5px;
+    margin-right: 15px; */
   }
 `;
